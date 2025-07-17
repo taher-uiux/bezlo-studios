@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Architectural Website - Bezlo Studio</title>
+
+  <!-- Favicon -->
+  <link rel="shortcut icon" href="../../favicon.svg" type="image/svg+xml">
+
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="../../assets/css/style.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;600;700&family=Josefin+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+  <header class="header" data-header>
+    <div class="container">
+
+      <a href="../../" class="logo"><img src="../../assets/images/bezlo-digital-primary-color.svg" alt="Bezlo Studio Logo" width="100" height="100"></a>
+
+      <nav class="navbar" data-navbar>
+
+        <div class="wrapper">
+          <a href="../" class="logo"><img src="../assets/images/bezlo-digital-primary-white.svg" alt="Bezlo Studio Logo" width="100" height="100"></a>
+
+          <button class="nav-close-btn" aria-label="close menu" data-nav-toggler>
+            <ion-icon name="close-outline" aria-hidden="true"></ion-icon>
+          </button>
+        </div>
+
+        <ul class="navbar-list">
+
+          <li class="navbar-item">
+            <a href="../../about/" class="navbar-link" data-nav-link>About Us</a>
+          </li>
+
+          <li class="navbar-item">
+            <a href="../" class="navbar-link" data-nav-link>Projects</a>
+          </li>
+
+          <li class="navbar-item">
+            <a href="../../contact/" class="btn btn-primary has-before has-after">Let's Talk 👋</a>
+          </li>
+
+        </ul>
+
+      </nav>
+
+      <button class="nav-open-btn" aria-label="open menu" data-nav-toggler>
+        <ion-icon name="menu-outline" aria-hidden="true"></ion-icon>
+      </button>
+
+
+
+      <div class="overlay" data-nav-toggler data-overlay></div>
+
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <article>
+      <!-- Project title -->
+      <section class="section project-title">
+        <div class="container">
+          <div class="breadcrumb">
+            <a href="../" class="breadcrumb-link btn-link">Projects</a>
+            <span class="breadcrumb-separator">/</span>
+            <p class="breadcrumb-text">Architectural Website</p>
+
+          </div>
+          <div class="project-title-content">
+            <h1 class="h1 hero-title">Architectural Website</h1>
+            <p class="section-subtitle">Best in industry 3D Architectural Visualization Studio</p>
+          </div>
+          <ul class="grid-list">
+            <li><label>Client Name</label>
+              <h4>StudioBlu Visuals</h4>
+            </li>
+            <li><label>Services</label>
+              <h4>Brand & Identity, Web Development</h4>
+            </li>
+            <li><label>Completed</label>
+              <h4>January 2024</h4>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Project Content -->
+      <section class="section project-content">
+        <div class="container">
+          <!-- Project Intro -->
+          <div class="project-intro">
+            <p>StudioBlu Architectural Visualization Studio is a creative firm specializing in high-quality 3D
+              architectural visualization, interior design, and design consultancy, delivering immersive and detailed
+              digital representations to help clients effectively communicate their design visions.</p>
+            </p>
+            <a href="https://www.studiobluvisuals.com/" class="btn btn-primary has-before has-after">Visit Website</a>
+          </div>
+          <!-- Section 1 -->
+          <figure>
+            <img src="https://placehold.co/960x540" alt="{Alt Text for Image 1}" class="img-cover">
+          </figure>
+          <div class="project-details">
+            <h2 class="h2">The challenges</h2>
+            <p class="project-text">The client, a leading architectural rendering services firm, sought a modern,
+              visually appealing brand identity and a website to showcase their impressive portfolio and generate leads.
+              Specializing in 3D photorealistic stills, animation renderings, and both interior and architectural
+              visualizations, the client serves a diverse range of clients, including architects, interior designers,
+              real estate developers, and individuals.</p>
+
+            <p class="project-text">The primary challenge was to highlight their high-quality projects using large,
+              detailed images without compromising the visual quality. Also, to create brand identity which stands out
+              from rest of the architecural firms. Additionally, displaying panoramas of their renderings posed a
+              significant issue, as the large file sizes increased page load times—a critical factor the client wanted
+              to address while maintaining optimal image resolution.</p>
+          </div>
+
+          <!-- Section 2 -->
+          <figure>
+            <img src="https://placehold.co/960x540" alt="{Alt Text for Image 2}" class="img-cover">
+          </figure>
+          <div class="project-details">
+            <h2 class="h2">Technical strategy</h2>
+            <p class="project-text">To address the challenges, the team began by benchmarking similar architectural firm
+              websites to analyze their brand and website structure and observe how they handled large image files. This
+              review informed several design and optimization strategies. After extensive evaluations, the team decided
+              on a linear, minimalistic approach to enhance visual focus on the renderings while reducing the file load.
+              To optimize load times, they minimized the size of non-essential elements, such as CSS and JavaScript
+              files, to improve overall performance.</p>
+
+            <p class="project-text">Additionally, lazy loading was implemented for images below the fold, ensuring that
+              images only loaded as users scrolled down the page. This approach helped maintain a visually rich
+              experience without compromising site speed.</p>
+
+          </div>
+
+
+          <!-- Section 3 -->
+          <figure>
+            <img src="https://placehold.co/960x540" alt="{Alt Text for Image 3}" class="img-cover">
+          </figure>
+          <div class="project-details">
+            <h2 class="h2">Prioritizing development</h2>
+            <p class="project-text">With the load-time issue addressed, the design phase began with simple layouts,
+              focusing on essential elements to establish a clean, modern aesthetic that would effectively showcase the
+              client’s work. Once the basic design was approved, the team moved on to color schemes that complemented
+              the client’s brand while emphasizing the renderings. Development then began in earnest, with a rigorous
+              focus on load time and performance.</p>
+
+            <p class="project-text">Throughout the development process, each page was tested to ensure minimal loading
+              times without sacrificing the high resolution and quality of the renderings. By testing iteratively, the
+              team maintained a high standard of quality and visual fidelity.</p>
+
+          </div>
+          <!-- Section 4 -->
+          <figure>
+            <img src="https://placehold.co/960x540" alt="{Alt Text for Image 4}" class="img-cover">
+          </figure>
+          <div class="project-details">
+            <h2 class="h2">Ready for take-off</h2>
+            <p class="project-text">Upon launching the website, further rounds of testing were conducted to refine its
+              performance and ensure SEO readiness. Continuous performance monitoring and adjustments were made to
+              enhance load times, and SEO best practices were applied to increase search visibility. This process
+              included fine-tuning image compression settings, evaluating metadata, and improving on-page elements for
+              faster rendering. As a result, the new website not only showcased the client’s portfolio in a visually
+              impactful way but also improved user experience and rankings, leading to better engagement and lead
+              generation.</p>
+          </div>
+          <div class="project-buttons">
+            <div class="wrapper">
+              <a href="../birds-care/" class=" project-btn">
+                <ion-icon name="arrow-back-outline"></ion-icon>
+
+                <span class="btn-link span">Bird Care & Accessories Store</span>
+              </a>
+              <a href="../account-receivable/" class=" project-btn">
+                <span class="btn-link span">Account Receivable Web App</span>
+                <ion-icon name="arrow-forward-outline"></ion-icon>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </article>
+
+  </main>
+
+  <!-- 
+    - #FOOTER
+  -->
+
+  <footer class="footer">
+    <div class="container">
+
+      <div class="footer-top section">
+
+        <div class="footer-brand">
+
+          <p class="footer-list-title">About Bezlo Studio</p>
+
+          <p class="footer-text">
+            We specialize in creating exceptional digital experiences that empower our clients to achieve
+            their business objectives effectively.
+          </p>
+
+        </div>
+
+        <ul class="footer-list">
+
+          <li>
+            <a href="../about/" class="footer-link btn-link">About us</a>
+          </li>
+
+          <li>
+            <a href="./" class="footer-link btn-link">Projects</a>
+          </li>
+
+          <li>
+            <a href="../contact/" class="footer-link btn-link">Contact us</a>
+          </li>
+
+        </ul>
+
+        <ul class="social-list">
+
+          <li>
+            <a href="#" class="social-link">
+              <ion-icon name="logo-dribbble"></ion-icon>
+
+              <span class="btn-link span">Dribbble</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="social-link">
+              <ion-icon name="logo-instagram"></ion-icon>
+
+              <span class="btn-link span">Instagram</span>
+            </a>
+          </li>
+
+          <li>
+            <a href="#" class="social-link">
+              <ion-icon name="logo-behance"></ion-icon>
+
+              <span class="btn-link span">Behance</span>
+            </a>
+          </li>
+
+        </ul>
+
+      </div>
+
+      <div class="footer-bottom">
+
+        <p class="copyright">
+          &copy; <span class="current-year">2022</span> Bezlo Studio. All Rights Reserved
+        </p>
+
+      </div>
+
+    </div>
+  </footer>
+
+
+
+
+
+  <!-- 
+    - #BACK TO TOP
+  -->
+
+  <a href="#top" class="back-top-btn has-after active" aria-label="back to top" data-back-top-btn>
+    <ion-icon name="arrow-up" aria-hidden="true"></ion-icon>
+  </a>
+
+
+
+
+
+  <!-- 
+    - custom js link
+  -->
+  <script src="../../assets/js/script.js" defer></script>
+
+  <!-- 
+    - ionicon link
+  -->
+  <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+  <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+</body>
+
+</html>
