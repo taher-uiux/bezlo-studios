@@ -12,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim(htmlspecialchars($_POST['name'] ?? ''));
     $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
     $message = trim(htmlspecialchars($_POST['message'] ?? ''));
+    $captcha = trim($_POST['captcha'] ?? '');
 
     // Validation
     $errors = [];
@@ -28,6 +29,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Message is required";
     }
 
+    // Captcha validation
+    if (empty($captcha)) {
+        $errors[] = "Please complete the security verification";
+    } else {
+        // Verify captcha against session
+        if (!isset($_SESSION['captcha_code']) || strtolower($captcha) !== strtolower($_SESSION['captcha_code'])) {
+            $errors[] = "Security verification failed. Please try again.";
+        }
+    }
+
     if (!empty($errors)) {
         http_response_code(400);
         echo json_encode([
@@ -37,8 +48,35 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
+    // Rate limiting - check if too many requests from same IP
+    $ip = $_SERVER['REMOTE_ADDR'];
+    $timeWindow = 3600; // 1 hour
+    $maxRequests = 5; // Max 5 requests per hour
+    
+    if (!isset($_SESSION['request_count'])) {
+        $_SESSION['request_count'] = 1;
+        $_SESSION['first_request_time'] = time();
+    } else {
+        $timeDiff = time() - $_SESSION['first_request_time'];
+        if ($timeDiff > $timeWindow) {
+            // Reset counter if time window has passed
+            $_SESSION['request_count'] = 1;
+            $_SESSION['first_request_time'] = time();
+        } else {
+            $_SESSION['request_count']++;
+            if ($_SESSION['request_count'] > $maxRequests) {
+                http_response_code(429);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Too many requests. Please try again later.'
+                ]);
+                exit;
+            }
+        }
+    }
+
     // Email configuration
-    $to = "info@bezlostudio.com"; // Replace with your email
+    $to = "bezlostudio@gmail.com"; // Replace with your email
     $subject = "New Project Inquiry from Bezlo Studio Website";
     
     // Email headers
@@ -46,21 +84,50 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $headers .= "Reply-To: $email\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+    $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
     
     // Email body
     $emailBody = "
     <html>
     <head>
         <title>New Project Inquiry</title>
+        <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+            .content { background: #fff; padding: 20px; border: 1px solid #ddd; border-radius: 8px; }
+            .field { margin-bottom: 15px; }
+            .label { font-weight: bold; color: #555; }
+            .value { margin-top: 5px; }
+            .footer { margin-top: 20px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        </style>
     </head>
     <body>
-        <h2>New Project Inquiry from Bezlo Studio Website</h2>
-        <p><strong>Name:</strong> $name</p>
-        <p><strong>Email:</strong> $email</p>
-        <p><strong>Message:</strong></p>
-        <p>" . nl2br($message) . "</p>
-        <hr>
-        <p><small>This message was sent from the contact form on bezlostudio.com</small></p>
+        <div class='container'>
+            <div class='header'>
+                <h2>New Project Inquiry from Bezlo Studio Website</h2>
+            </div>
+            <div class='content'>
+                <div class='field'>
+                    <div class='label'>Name:</div>
+                    <div class='value'>$name</div>
+                </div>
+                <div class='field'>
+                    <div class='label'>Email:</div>
+                    <div class='value'>$email</div>
+                </div>
+                <div class='field'>
+                    <div class='label'>Message:</div>
+                    <div class='value'>" . nl2br($message) . "</div>
+                </div>
+            </div>
+            <div class='footer'>
+                <p><strong>Submission Details:</strong></p>
+                <p>IP Address: $ip</p>
+                <p>Date: " . date('Y-m-d H:i:s') . "</p>
+                <p>This message was sent from the contact form on bezlostudio.com</p>
+            </div>
+        </div>
     </body>
     </html>
     ";
@@ -69,6 +136,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mailSent = mail($to, $subject, $emailBody, $headers);
     
     if ($mailSent) {
+        // Clear captcha after successful submission
+        unset($_SESSION['captcha_code']);
+        
         echo json_encode([
             'success' => true,
             'message' => "Thank you for contacting us, $name! We will get back to you shortly."

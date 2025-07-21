@@ -108,6 +108,34 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /**
+   * Captcha functionality
+   */
+  const captchaDisplay = document.getElementById("captcha-display");
+  const refreshCaptchaBtn = document.getElementById("refresh-captcha");
+  
+  function loadCaptcha() {
+    if (captchaDisplay) {
+      fetch("../generate_captcha.php")
+        .then(response => response.json())
+        .then(data => {
+          captchaDisplay.textContent = data.captcha;
+        })
+        .catch(error => {
+          console.error("Error loading captcha:", error);
+          captchaDisplay.textContent = "ERROR";
+        });
+    }
+  }
+  
+  // Load initial captcha
+  loadCaptcha();
+  
+  // Refresh captcha button
+  if (refreshCaptchaBtn) {
+    refreshCaptchaBtn.addEventListener("click", loadCaptcha);
+  }
+
+  /**
    * Contact form handling
    */
   const contactForm = document.getElementById("contact-form");
@@ -125,10 +153,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const name = formData.get('name').trim();
       const email = formData.get('email').trim();
       const message = formData.get('message').trim();
+      const captcha = formData.get('captcha').trim();
       
-      if (!name || !email || !message) {
+      if (!name || !email || !message || !captcha) {
         if (errorMessage) {
-          errorMessage.textContent = "Please fill in all required fields.";
+          errorMessage.textContent = "Please fill in all required fields including the security verification.";
           errorMessage.classList.add("show");
         }
         return;
@@ -176,6 +205,9 @@ document.addEventListener("DOMContentLoaded", () => {
            
            // Reset form
            contactForm.reset();
+           
+           // Reload captcha after successful submission
+           loadCaptcha();
            
            // Scroll to success message
            if (successMessage) {

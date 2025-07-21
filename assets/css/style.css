@@ -1207,11 +1207,116 @@ body {
   display: block;
 }
 
+/*-----------------------------------*\ #CAPTCHA STYLES \*-----------------------------------*/
+.captcha-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.captcha-display {
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
+  border: 2px solid #ddd;
+  border-radius: var(--radius-8);
+  padding: 15px 20px;
+  font-family: 'Courier New', monospace;
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  min-width: 120px;
+  user-select: none;
+  letter-spacing: 3px;
+  position: relative;
+  overflow: hidden;
+}
+
+.captcha-display::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+#refresh-captcha {
+  padding: 12px;
+  border-radius: var(--radius-8);
+  background: var(--white);
+  border: 2px solid #ddd;
+  color: #666;
+  cursor: pointer;
+  transition: all var(--transition-1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#refresh-captcha:hover {
+  background: #f5f5f5;
+  border-color: #ccc;
+  color: #333;
+}
+
+#refresh-captcha ion-icon {
+  font-size: 18px;
+}
+
 /*-----------------------------------*\ #ABOUT PAGE \*-----------------------------------*/
 .about-text {
   color: var(--charcoal-black);
   font-size: var(--fs-5);
   margin-block-start: 10px;
+}
+
+/*-----------------------------------*\ #LOGO PAGE \*-----------------------------------*/
+.logo-section{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2.5rem;
+}
+
+.logo-content {
+  padding-top: 5rem;
+}
+
+.logo-content .img-cover{
+  height: auto;
+}
+
+.logo-details .grid-list {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.logo-details h4{
+  font-family: var(--ff-josefin-sans);
+  font-size: 1.8rem;
+}
+
+.logo-details {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.logo-content .container {
+  display: grid;
+  gap: 80px
+}
+
+.logo-section{
+  grid-template-columns: 1fr;
 }
 
 /*-----------------------------------*\ #MEDIA QUERIES \*-----------------------------------*/
@@ -1254,6 +1359,13 @@ body {
 
   .contact-card-group {
     display: flex;
+  }
+
+  .logo-section {
+    grid-template-columns: 1fr 1fr;
+  }
+  .logo-content .logo-section:nth-child(even) figure  {
+    order: 2;
   }
 }
 

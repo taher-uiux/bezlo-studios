@@ -47,7 +47,7 @@
       "contactPoint": {
         "@type": "ContactPoint",
         "contactType": "customer service",
-        "email": "info@bezlostudio.com",
+        "email": "bezlostudio@gmail.com",
         "availableLanguage": "English"
       }
     }
@@ -157,7 +157,7 @@
                 <div class="card-icon" style="--color: 343, 98%, 60%;">
                   <ion-icon name="mail-outline"></ion-icon>
                 </div>
-                <h3 class="h3 card-title"><a href="mailto:info@bezlostudio.com">Click to write us</a></h3>
+                <h3 class="h3 card-title"><a href="mailto:bezlostudio@gmail.com">Click to write us</a></h3>
               </div>
               <div class="contact-card">
                 <div class="card-icon" style="--color: 174, 77%, 50%">
@@ -186,6 +186,16 @@
                 <label for="message" class="form-label">Project Details *</label>
                 <textarea id="message" name="message" class="form-textarea" placeholder="Tell us about your project goals, target users, and any specific requirements..."
                   rows="6" required></textarea>
+              </div>
+              <div class="form-group">
+                <label for="captcha" class="form-label">Security Verification *</label>
+                <div class="captcha-container">
+                  <div class="captcha-display" id="captcha-display"></div>
+                  <input type="text" id="captcha" name="captcha" class="form-input" placeholder="Enter the code above" required>
+                  <button type="button" id="refresh-captcha" class="btn btn-secondary" aria-label="Refresh captcha">
+                    <ion-icon name="refresh-outline"></ion-icon>
+                  </button>
+                </div>
               </div>
               <div class="form-row">
                 <button type="submit" class="btn btn-primary">Send Message</button>
