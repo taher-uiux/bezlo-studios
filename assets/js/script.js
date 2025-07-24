@@ -108,34 +108,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /**
-   * Captcha functionality
-   */
-  const captchaDisplay = document.getElementById("captcha-display");
-  const refreshCaptchaBtn = document.getElementById("refresh-captcha");
-  
-  function loadCaptcha() {
-    if (captchaDisplay) {
-      fetch("../generate_captcha.php")
-        .then(response => response.json())
-        .then(data => {
-          captchaDisplay.textContent = data.captcha;
-        })
-        .catch(error => {
-          console.error("Error loading captcha:", error);
-          captchaDisplay.textContent = "ERROR";
-        });
-    }
-  }
-  
-  // Load initial captcha
-  loadCaptcha();
-  
-  // Refresh captcha button
-  if (refreshCaptchaBtn) {
-    refreshCaptchaBtn.addEventListener("click", loadCaptcha);
-  }
-
-  /**
    * Contact form handling
    */
   const contactForm = document.getElementById("contact-form");
@@ -145,24 +117,21 @@ document.addEventListener("DOMContentLoaded", () => {
   if (contactForm) {
     contactForm.addEventListener("submit", function(e) {
       e.preventDefault();
-      
       // Get form data
       const formData = new FormData(this);
-      
       // Client-side validation
       const name = formData.get('name').trim();
       const email = formData.get('email').trim();
       const message = formData.get('message').trim();
-      const captcha = formData.get('captcha').trim();
-      
-      if (!name || !email || !message || !captcha) {
+      // Google reCAPTCHA validation
+      const recaptcha = formData.get('g-recaptcha-response');
+      if (!name || !email || !message || !recaptcha) {
         if (errorMessage) {
-          errorMessage.textContent = "Please fill in all required fields including the security verification.";
+          errorMessage.textContent = "Please fill in all required fields and complete the security verification.";
           errorMessage.classList.add("show");
         }
         return;
       }
-      
       // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
@@ -172,23 +141,20 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         return;
       }
-      
       // Show loading state
       const submitBtn = this.querySelector('button[type="submit"]');
       const originalText = submitBtn.textContent;
       submitBtn.textContent = "Sending...";
       submitBtn.disabled = true;
-      
-             // Clear previous messages
-       if (successMessage) {
-         successMessage.textContent = "";
-         successMessage.classList.remove("show");
-       }
-       if (errorMessage) {
-         errorMessage.textContent = "";
-         errorMessage.classList.remove("show");
-       }
-      
+      // Clear previous messages
+      if (successMessage) {
+        successMessage.textContent = "";
+        successMessage.classList.remove("show");
+      }
+      if (errorMessage) {
+        errorMessage.textContent = "";
+        errorMessage.classList.remove("show");
+      }
       // Send form data via AJAX
       fetch("../send_email.php", {
         method: "POST",
@@ -196,38 +162,33 @@ document.addEventListener("DOMContentLoaded", () => {
       })
       .then(response => response.json())
       .then(data => {
-                 if (data.success) {
-           // Show success message
-           if (successMessage) {
-             successMessage.textContent = data.message;
-             successMessage.classList.add("show");
-           }
-           
-           // Reset form
-           contactForm.reset();
-           
-           // Reload captcha after successful submission
-           loadCaptcha();
-           
-           // Scroll to success message
-           if (successMessage) {
-             successMessage.scrollIntoView({ behavior: "smooth", block: "center" });
-           }
-         } else {
-           // Show error message
-           if (errorMessage) {
-             errorMessage.textContent = data.message;
-             errorMessage.classList.add("show");
-           }
-         }
+        if (data.success) {
+          // Show success message
+          if (successMessage) {
+            successMessage.textContent = data.message;
+            successMessage.classList.add("show");
+          }
+          // Reset form
+          contactForm.reset();
+          // Scroll to success message
+          if (successMessage) {
+            successMessage.scrollIntoView({ behavior: "smooth", block: "center" });
+          }
+        } else {
+          // Show error message
+          if (errorMessage) {
+            errorMessage.textContent = data.message;
+            errorMessage.classList.add("show");
+          }
+        }
       })
-             .catch(error => {
-         console.error("Error:", error);
-         if (errorMessage) {
-           errorMessage.textContent = "An error occurred. Please try again or contact us directly.";
-           errorMessage.classList.add("show");
-         }
-       })
+      .catch(error => {
+        console.error("Error:", error);
+        if (errorMessage) {
+          errorMessage.textContent = "An error occurred. Please try again or contact us directly.";
+          errorMessage.classList.add("show");
+        }
+      })
       .finally(() => {
         // Reset button state
         submitBtn.textContent = originalText;
