@@ -1,6 +1,6 @@
 <?php
 header('Content-Type: application/json');
-session_start();
+// session_start(); // No longer needed for captcha
 
 // Allow CORS for AJAX requests
 header('Access-Control-Allow-Origin: *');
@@ -12,7 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $name = trim(htmlspecialchars($_POST['name'] ?? ''));
     $email = filter_var(trim($_POST['email'] ?? ''), FILTER_SANITIZE_EMAIL);
     $message = trim(htmlspecialchars($_POST['message'] ?? ''));
-    $captcha = trim($_POST['captcha'] ?? '');
+    $recaptcha_response = $_POST['g-recaptcha-response'] ?? '';
 
     // Validation
     $errors = [];
@@ -29,13 +29,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Message is required";
     }
 
-    // Captcha validation
-    if (empty($captcha)) {
-        $errors[] = "Please complete the security verification";
+    // Google reCAPTCHA validation
+    if (empty($recaptcha_response)) {
+        $errors[] = "Please complete the security verification.";
     } else {
-        // Verify captcha against session
-        if (!isset($_SESSION['captcha_code']) || strtolower($captcha) !== strtolower($_SESSION['captcha_code'])) {
-            $errors[] = "Security verification failed. Please try again.";
+        $recaptcha_secret = '6LcGL4orAAAAAGKDL7ird0LkgIiv570EWn4z2g9O'; // Replace with your secret key
+        $recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify';
+        $recaptcha = file_get_contents($recaptcha_url . '?secret=' . $recaptcha_secret . '&response=' . $recaptcha_response . '&remoteip=' . $_SERVER['REMOTE_ADDR']);
+        $recaptcha = json_decode($recaptcha);
+        if (!$recaptcha || !$recaptcha->success) {
+            $errors[] = "reCAPTCHA verification failed. Please try again.";
         }
     }
 
@@ -136,9 +139,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $mailSent = mail($to, $subject, $emailBody, $headers);
     
     if ($mailSent) {
-        // Clear captcha after successful submission
-        unset($_SESSION['captcha_code']);
-        
         echo json_encode([
             'success' => true,
             'message' => "Thank you for contacting us, $name! We will get back to you shortly."
