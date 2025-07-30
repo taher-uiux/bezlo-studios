@@ -1,6 +1,11 @@
+use Google\Cloud\RecaptchaEnterprise\V1\Client\RecaptchaEnterpriseServiceClient;
+use Google\Cloud\RecaptchaEnterprise\V1\Event;
+use Google\Cloud\RecaptchaEnterprise\V1\Assessment;
+use Google\Cloud\RecaptchaEnterprise\V1\CreateAssessmentRequest;
+use Google\Cloud\RecaptchaEnterprise\V1\TokenProperties\InvalidReason;
+
 <?php
 header('Content-Type: application/json');
-// session_start(); // No longer needed for captcha
 
 // Allow CORS for AJAX requests
 header('Access-Control-Allow-Origin: *');
@@ -29,16 +34,73 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $errors[] = "Message is required";
     }
 
-    // Google reCAPTCHA validation
+    // Google reCAPTCHA Enterprise validation (NEW)
     if (empty($recaptcha_response)) {
         $errors[] = "Please complete the security verification.";
     } else {
-        $recaptcha_secret = '6LcGL4orAAAAAGKDL7ird0LkgIiv570EWn4z2g9O'; // Replace with your secret key
-        $recaptcha_url = 'https://www.google.com/recaptcha/api/siteverify';
-        $recaptcha = file_get_contents($recaptcha_url . '?secret=' . $recaptcha_secret . '&response=' . $recaptcha_response . '&remoteip=' . $_SERVER['REMOTE_ADDR']);
-        $recaptcha = json_decode($recaptcha);
-        if (!$recaptcha || !$recaptcha->success) {
-            $errors[] = "reCAPTCHA verification failed. Please try again.";
+        require 'vendor/autoload.php';
+
+
+        function verify_recaptcha_enterprise($recaptchaKey, $token, $project, $action) {
+            $client = new RecaptchaEnterpriseServiceClient();
+            $projectName = $client->projectName($project);
+
+            $event = (new Event())
+                ->setSiteKey($recaptchaKey)
+                ->setToken($token);
+
+            $assessment = (new Assessment())
+                ->setEvent($event);
+
+            $request = (new CreateAssessmentRequest())
+                ->setParent($projectName)
+                ->setAssessment($assessment);
+
+            try {
+                $response = $client->createAssessment($request);
+
+                // Check if the token is valid.
+                if ($response->getTokenProperties()->getValid() == false) {
+                    return [
+                        'success' => false,
+                        'error' => 'The CreateAssessment() call failed because the token was invalid for the following reason: ' .
+                            InvalidReason::name($response->getTokenProperties()->getInvalidReason())
+                    ];
+                }
+
+                // Check if the expected action was executed.
+                if ($response->getTokenProperties()->getAction() != $action) {
+                    return [
+                        'success' => false,
+                        'error' => 'The action attribute in your reCAPTCHA tag does not match the action you are expecting to score'
+                    ];
+                }
+
+                // Get the risk score (0.0 - 1.0, where 1.0 is very likely a good interaction)
+                $score = $response->getRiskAnalysis()->getScore();
+                return [
+                    'success' => true,
+                    'score' => $score
+                ];
+            } catch (\Exception $e) {
+                return [
+                    'success' => false,
+                    'error' => 'CreateAssessment() call failed with the following error: ' . $e->getMessage()
+                ];
+            }
+        }
+
+        // Replace with your actual values
+        $recaptchaKey = '6LcGL4orAAAAAGKDL7ird0LkgIiv570EWn4z2g9O';
+        $projectId = 'bezlo-studio';
+        $recaptchaAction = 'contact_form'; // This should match the action set on the client
+
+        $recaptchaResult = verify_recaptcha_enterprise($recaptchaKey, $recaptcha_response, $projectId, $recaptchaAction);
+
+        if (!$recaptchaResult['success']) {
+            $errors[] = "reCAPTCHA verification failed. " . ($recaptchaResult['error'] ?? '');
+        } elseif ($recaptchaResult['score'] < 0.5) {
+            $errors[] = "reCAPTCHA score too low. Please try again.";
         }
     }
 
@@ -55,7 +117,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $ip = $_SERVER['REMOTE_ADDR'];
     $timeWindow = 3600; // 1 hour
     $maxRequests = 5; // Max 5 requests per hour
-    
+
+    session_start();
     if (!isset($_SESSION['request_count'])) {
         $_SESSION['request_count'] = 1;
         $_SESSION['first_request_time'] = time();
