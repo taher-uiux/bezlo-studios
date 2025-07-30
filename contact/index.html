@@ -189,7 +189,7 @@
 
           <div class="contact-info">
             <h2 class="h2 section-title">Tell us about your <span class="has-before">project</span></h2>
-            <form id="contact-form" method="POST" class="form">
+            <form id="contact-form" action="https://formspree.io/f/meozzjnz" method="POST" class="form">
               <div class="form-row">
                 <div class="form-group">
                   <label for="name" class="form-label">Your Name *</label>
@@ -210,13 +210,12 @@
               <div class="form-group">
                 <button type="submit" class="btn btn-primary">Send Message</button>
               </div>
-              <div id="success-message" class="message success"></div>
-              <div id="error-message" class="message error"></div>
+              <div id="form-status" class="message success"></div>
             </form>
           </div>
         </div>
       </section>
-    </article>
+    </article>  
   </main>
 
   <!-- 
@@ -306,14 +305,7 @@
 
   <!-- custom js link  -->
   <script src="../assets/js/script.js" defer async></script>
-  <!-- Google reCAPTCHA script -->
-  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LcGL4orAAAAAGKDL7ird0LkgIiv570EWn4z2g9O" defer
-    async></script>
-  <script defer async>
-    function onSubmit(token) {
-      document.getElementById("contact-form").submit();
-    }
-  </script>
+
   <!-- ionicon link -->
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js" defer async></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js" defer async></script>
