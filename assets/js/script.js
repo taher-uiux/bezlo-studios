@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", () => {
    */
   const yearElements = document.querySelectorAll('.current-year');
   const currentYear = new Date().getFullYear();
-  
+
   yearElements.forEach(element => {
     element.textContent = currentYear;
   });
@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const errorMessage = document.getElementById("error-message");
 
   if (contactForm) {
-    contactForm.addEventListener("submit", function(e) {
+    contactForm.addEventListener("submit", function (e) {
       e.preventDefault();
       // Get form data
       const formData = new FormData(this);
@@ -123,16 +123,13 @@ document.addEventListener("DOMContentLoaded", () => {
       const name = formData.get('name').trim();
       const email = formData.get('email').trim();
       const message = formData.get('message').trim();
-      // Google reCAPTCHA validation
-      const recaptcha = formData.get('g-recaptcha-response');
-      if (!name || !email || !message || !recaptcha) {
+      if (!name || !email || !message) {
         if (errorMessage) {
-          errorMessage.textContent = "Please fill in all required fields and complete the security verification.";
+          errorMessage.textContent = "Please fill in all required fields.";
           errorMessage.classList.add("show");
         }
         return;
       }
-      // Basic email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email)) {
         if (errorMessage) {
@@ -155,44 +152,54 @@ document.addEventListener("DOMContentLoaded", () => {
         errorMessage.textContent = "";
         errorMessage.classList.remove("show");
       }
-      // Send form data via AJAX
-      fetch("../send_email.php", {
-        method: "POST",
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          // Show success message
-          if (successMessage) {
-            successMessage.textContent = data.message;
-            successMessage.classList.add("show");
-          }
-          // Reset form
-          contactForm.reset();
-          // Scroll to success message
-          if (successMessage) {
-            successMessage.scrollIntoView({ behavior: "smooth", block: "center" });
-          }
-        } else {
-          // Show error message
-          if (errorMessage) {
-            errorMessage.textContent = data.message;
-            errorMessage.classList.add("show");
-          }
-        }
-      })
-      .catch(error => {
-        console.error("Error:", error);
-        if (errorMessage) {
-          errorMessage.textContent = "An error occurred. Please try again or contact us directly.";
-          errorMessage.classList.add("show");
-        }
-      })
-      .finally(() => {
-        // Reset button state
-        submitBtn.textContent = originalText;
-        submitBtn.disabled = false;
+      // Send form data via AJAX with reCAPTCHA
+      grecaptcha.ready(function () {
+        grecaptcha.execute('6LcGL4orAAAAAGKDL7ird0LkgIiv570EWn4z2g9O', { action: 'submit' }).then(function (token) {
+          formData.append('g-recaptcha-response', token);
+          fetch("../send_email.php", {
+            method: "POST",
+            body: formData
+          })
+            .then(async response => {
+              let data;
+              try {
+                data = await response.json();
+              } catch (e) {
+                const text = await response.text();
+                if (errorMessage) {
+                  errorMessage.textContent = text || "An unexpected error occurred. Please try again later.";
+                  errorMessage.classList.add("show");
+                }
+                throw new Error("Invalid JSON response");
+              }
+              if (data.success) {
+                if (successMessage) {
+                  successMessage.textContent = data.message;
+                  successMessage.classList.add("show");
+                }
+                contactForm.reset();
+                if (successMessage) {
+                  successMessage.scrollIntoView({ behavior: "smooth", block: "center" });
+                }
+              } else {
+                if (errorMessage) {
+                  errorMessage.textContent = data.message;
+                  errorMessage.classList.add("show");
+                }
+              }
+            })
+            .catch(error => {
+              console.error("Error:", error);
+              if (errorMessage && !errorMessage.classList.contains("show")) {
+                errorMessage.textContent = "An error occurred. Please try again or contact us directly.";
+                errorMessage.classList.add("show");
+              }
+            })
+            .finally(() => {
+              submitBtn.textContent = originalText;
+              submitBtn.disabled = false;
+            });
+        });
       });
     });
   }
