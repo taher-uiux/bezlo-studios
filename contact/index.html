@@ -189,7 +189,7 @@
 
           <div class="contact-info">
             <h2 class="h2 section-title">Tell us about your <span class="has-before">project</span></h2>
-            <form id="contact-form" action="../send_email.php" method="POST" class="form">
+            <form id="contact-form" method="POST" class="form">
               <div class="form-row">
                 <div class="form-group">
                   <label for="name" class="form-label">Your Name *</label>
@@ -208,9 +208,7 @@
                   rows="6" required></textarea>
               </div>
               <div class="form-group">
-                <button type="submit" class="btn btn-primary g-recaptcha"
-                  data-sitekey="6LcGL4orAAAAAGKDL7ird0LkgIiv570EWn4z2g9O" data-callback='onSubmit'
-                  data-action='submit'>Send Message</button>
+                <button type="submit" class="btn btn-primary">Send Message</button>
               </div>
               <div id="success-message" class="message success"></div>
               <div id="error-message" class="message error"></div>
