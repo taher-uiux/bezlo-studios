@@ -110,97 +110,34 @@ document.addEventListener("DOMContentLoaded", () => {
   /**
    * Contact form handling
    */
-  const contactForm = document.getElementById("contact-form");
-  const successMessage = document.getElementById("success-message");
-  const errorMessage = document.getElementById("error-message");
-
-  if (contactForm) {
-    contactForm.addEventListener("submit", function (e) {
-      e.preventDefault();
-      // Get form data
-      const formData = new FormData(this);
-      // Client-side validation
-      const name = formData.get('name').trim();
-      const email = formData.get('email').trim();
-      const message = formData.get('message').trim();
-      if (!name || !email || !message) {
-        if (errorMessage) {
-          errorMessage.textContent = "Please fill in all required fields.";
-          errorMessage.classList.add("show");
-        }
-        return;
+  var form = document.getElementById("contact-form");
+  
+  async function handleSubmit(event) {
+    event.preventDefault();
+    var status = document.getElementById("form-status");
+    var data = new FormData(event.target);
+    fetch(event.target.action, {
+      method: form.method,
+      body: data,
+      headers: {
+          'Accept': 'application/json'
       }
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(email)) {
-        if (errorMessage) {
-          errorMessage.textContent = "Please enter a valid email address.";
-          errorMessage.classList.add("show");
-        }
-        return;
+    }).then(response => {
+      if (response.ok) {
+        status.innerHTML = "Thanks for your submission!";
+        form.reset()
+      } else {
+        response.json().then(data => {
+          if (Object.hasOwn(data, 'errors')) {
+            status.innerHTML = data["errors"].map(error => error["message"]).join(", ")
+          } else {
+            status.innerHTML = "Oops! There was a problem submitting your form"
+          }
+        })
       }
-      // Show loading state
-      const submitBtn = this.querySelector('button[type="submit"]');
-      const originalText = submitBtn.textContent;
-      submitBtn.textContent = "Sending...";
-      submitBtn.disabled = true;
-      // Clear previous messages
-      if (successMessage) {
-        successMessage.textContent = "";
-        successMessage.classList.remove("show");
-      }
-      if (errorMessage) {
-        errorMessage.textContent = "";
-        errorMessage.classList.remove("show");
-      }
-      // Send form data via AJAX with reCAPTCHA
-      grecaptcha.ready(function () {
-        grecaptcha.execute('6LcGL4orAAAAAGKDL7ird0LkgIiv570EWn4z2g9O', { action: 'submit' }).then(function (token) {
-          formData.append('g-recaptcha-response', token);
-          fetch("../send_email.php", {
-            method: "POST",
-            body: formData
-          })
-            .then(async response => {
-              let data;
-              try {
-                data = await response.json();
-              } catch (e) {
-                const text = await response.text();
-                if (errorMessage) {
-                  errorMessage.textContent = text || "An unexpected error occurred. Please try again later.";
-                  errorMessage.classList.add("show");
-                }
-                throw new Error("Invalid JSON response");
-              }
-              if (data.success) {
-                if (successMessage) {
-                  successMessage.textContent = data.message;
-                  successMessage.classList.add("show");
-                }
-                contactForm.reset();
-                if (successMessage) {
-                  successMessage.scrollIntoView({ behavior: "smooth", block: "center" });
-                }
-              } else {
-                if (errorMessage) {
-                  errorMessage.textContent = data.message;
-                  errorMessage.classList.add("show");
-                }
-              }
-            })
-            .catch(error => {
-              console.error("Error:", error);
-              if (errorMessage && !errorMessage.classList.contains("show")) {
-                errorMessage.textContent = "An error occurred. Please try again or contact us directly.";
-                errorMessage.classList.add("show");
-              }
-            })
-            .finally(() => {
-              submitBtn.textContent = originalText;
-              submitBtn.disabled = false;
-            });
-        });
-      });
+    }).catch(error => {
+      status.innerHTML = "Oops! There was a problem submitting your form"
     });
   }
-});
+    form.addEventListener("submit", handleSubmit);
+  });
